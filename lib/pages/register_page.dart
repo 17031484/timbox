@@ -108,7 +108,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Text(msg)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: Text(
+                        msg,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.red),
+                      ),
+                    )
                   ],
                 ),
               )
@@ -131,32 +140,38 @@ class _RegisterPageState extends State<RegisterPage> {
         controllers.every((controller) => controller.text.isNotEmpty);
     if (allFieldsFilled) {
       if (passwordController.text == confirmController.text) {
-        print('Preocediendo');
-        var regBody = {
-          "username": nameController.text,
-          "email": emailController.text,
-          "pass": passwordController.text,
-          "rfc": rfcController.text,
-        };
-        try {
-          var response = await http.post(
-            Uri.parse(routes.addUser),
-            headers: {"Content-Type": "application/json; charset=utf-8"},
-            body: jsonEncode(regBody),
-          );
+        final RegExp rfcRegExp = RegExp(r'^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$');
+        if (rfcRegExp.hasMatch(rfcController.text)) {
+          print('Procediendo');
+          var regBody = {
+            "username": nameController.text,
+            "email": emailController.text,
+            "pass": passwordController.text,
+            "rfc": rfcController.text,
+          };
+          try {
+            var response = await http.post(
+              Uri.parse(routes.addUser),
+              headers: {"Content-Type": "application/json; charset=utf-8"},
+              body: jsonEncode(regBody),
+            );
 
-          if (response.statusCode == 200) {
-            //Permite acceder, usuario y contraseña correctas
-            print(response.body);
+            if (response.statusCode == 201) {
+              print(response.body);
+            }
+          } catch (e) {
+            print('Error en la solicitud POST: $e');
+            // Manejar el error, como mostrar un mensaje de error al usuario
           }
-        } catch (e) {
-          print('Error en la solicitud POST: $e');
-          // Manejar el error, como mostrar un mensaje de error al usuario
+        } else {
+          setState(() {
+            msg = 'Por favor ingrese un RFC válido';
+          });
         }
       } else {
-       setState(() {
-        msg = 'Las contraseñas no coinciden';
-      });
+        setState(() {
+          msg = 'Las contraseñas no coinciden';
+        });
       }
     } else {
       //hacer un text con un set satate para mostrar el error
