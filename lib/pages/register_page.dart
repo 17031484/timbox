@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/my_textfield%20copy.dart';
+import 'package:flutter_application_1/pages/home_page.dart';
+import 'package:flutter_application_1/pages/login_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/config.dart' as routes;
 
@@ -158,6 +160,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
             if (response.statusCode == 201) {
               print(response.body);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
             }
           } catch (e) {
             print('Error en la solicitud POST: $e');
