@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/my_textfield%20copy.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_application_1/config.dart' as routes;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,6 +19,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final confirmController = TextEditingController();
   bool _validate = false;
+
+  String msg = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +104,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                       ),
-                    )
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(msg)
                   ],
                 ),
               )
@@ -120,44 +130,40 @@ class _RegisterPageState extends State<RegisterPage> {
     bool allFieldsFilled =
         controllers.every((controller) => controller.text.isNotEmpty);
     if (allFieldsFilled) {
-      print('Preocediendo');
-      var regBody = {
-        "nombre": nameController.text,
-        "correo": emailController.text,
-        "rfc": rfcController.text,
-        "domfiscal": domfisController.text,
-        "curp": curpController.text,
-        "nss": nssController.text,
-        "fechainicio": fechainiciolaboralController.text,
-        "tipocontrato": tipocontratoController.text,
-        "depto": deptoController.text,
-        "puesto": puestoController.text,
-        "salariodiario": salarioController.text,
-        "salario": salarioController.text,
-        "clventidad": clventidadController.text,
-        "estado": dropdownValue,
-      };
-      try {
-        var response = await http.post(
-          Uri.parse(routes.addColaborator),
-          headers: {"Content-Type": "application/json; charset=utf-8"},
-          body: jsonEncode(regBody),
-        );
-        //print(response.statusCode);
-        //print(response.body);
+      if (passwordController.text == confirmController.text) {
+        print('Preocediendo');
+        var regBody = {
+          "username": nameController.text,
+          "email": emailController.text,
+          "pass": passwordController.text,
+          "rfc": rfcController.text,
+        };
+        try {
+          var response = await http.post(
+            Uri.parse(routes.addUser),
+            headers: {"Content-Type": "application/json; charset=utf-8"},
+            body: jsonEncode(regBody),
+          );
 
-        if (response.statusCode == 200) {
-          //Permite acceder, usuario y contraseña correctas
-          print(response.body);
+          if (response.statusCode == 200) {
+            //Permite acceder, usuario y contraseña correctas
+            print(response.body);
+          }
+        } catch (e) {
+          print('Error en la solicitud POST: $e');
+          // Manejar el error, como mostrar un mensaje de error al usuario
         }
-       
-      } catch (e) {
-        print('Error en la solicitud POST: $e');
-        // Manejar el error, como mostrar un mensaje de error al usuario
+      } else {
+       setState(() {
+        msg = 'Las contraseñas no coinciden';
+      });
       }
     } else {
       //hacer un text con un set satate para mostrar el error
       print('No se llenaron todos los campos correspondientes');
+      setState(() {
+        msg = 'No se llenaron todos los campos correspondientes';
+      });
     }
   }
 }
