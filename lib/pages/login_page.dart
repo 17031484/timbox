@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/my_button.dart';
 import 'package:flutter_application_1/components/my_textfield.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
+import 'package:flutter_application_1/pages/register_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/config.dart' as routes;
 import 'package:flutter/material.dart';
@@ -152,17 +153,25 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('¿No estás registrado?'),
-                    SizedBox(
+                    const Text('¿No estás registrado?'),
+                    const SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      'Registrate aquí',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                    GestureDetector(
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegisterPage()),
+                        )
+                      },
+                      child: const Text(
+                        'Registrate aquí',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     )
                   ],
                 )
